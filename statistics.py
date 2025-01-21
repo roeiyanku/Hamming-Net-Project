@@ -1,17 +1,10 @@
 import random
-import Hamming_Net
-import correctLetters
-import randomDataset
 
 
 # Function to add noise to a binary vector
 def add_noise(vector, noise_level):
-    """
-    Adds noise to a binary vector based on the specified noise level.
-    :param vector: The binary vector of the letter
-    :param noise_level: The noise percentage (from 0 to 100)
-    :return: The noisy vector
-    """
+    # Function to create noisy vectors
+
     noisy_vector = vector.copy()
     num_bits_to_flip = int(len(vector) * noise_level / 100)  # Number of bits to change
     indices_to_flip = random.sample(range(len(vector)), num_bits_to_flip)
@@ -22,13 +15,11 @@ def add_noise(vector, noise_level):
     return noisy_vector
 
 
-# Check the effect of noise on the network
 noise_levels = [5, 10, 20]  # Noise levels to test
 
 
 # Function to calculate accuracy
 def calculate_accuracy(hnn, test_vectors, actual_letters):
-
     correct_predictions = 0
     letter_predictions = []
     for i in range(len(test_vectors)):

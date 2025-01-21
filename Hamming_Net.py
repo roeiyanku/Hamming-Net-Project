@@ -1,12 +1,14 @@
 import correctLetters
+import numpy as np
 
 
 class HammingNeuralNetwork:
     def __init__(self, dictionary):
-        self.hnn_dic = dictionary
+        self.hnn_dic = dictionary  #Initialize the network in our case as random vectors
 
     @staticmethod
-    def calculate_Hamming_Distance(v1, v2):
+    def calculate_Hamming_Distance(v1,
+                                   v2):  #The core of the Hamming distance Idea, how we check the hamming distance between two vectors, but we will use a dot product
         distance = 0
         for i in range(len(v1)):
 
@@ -15,14 +17,22 @@ class HammingNeuralNetwork:
 
         return distance
 
+    @staticmethod
+    def calculate_dot_product(v1, v2):  # We will use The dot product instead of Hamming distance
+        dot_product = 0
+        for i in range(len(v1)):
+            if v1[i] == 1 and v2[i] == 1:
+                dot_product += 1
+        return dot_product
+
     def calculate_closest_letter(self, vector):  # compares the letter in the current data
         closest_letter = "A"
-        closest_distance = 64  # assuming the maximum distance is 64
+        closest_distance = 0
 
-        for letter, letter_vector in self.hnn_dic.items():
-            i_distance = self.calculate_Hamming_Distance(vector, letter_vector)
+        for letter, letter_vector in self.hnn_dic.items(): # Here we implement Winner takes it all(MAXNET)
+            i_distance = self.calculate_dot_product(vector, letter_vector)
 
-            if i_distance < closest_distance:
+            if i_distance > closest_distance:
                 closest_distance = i_distance
                 closest_letter = letter
 
@@ -30,32 +40,34 @@ class HammingNeuralNetwork:
 
     def calculate_closest_correct_letter(self, vector):  # compares the letter in the correct data
         closest_letter = "A"
-        closest_distance = 64  # assuming the maximum distance is 64
+        closest_distance = 0
 
-        for letter, letter_vector in correctLetters.letters.items():
-            i_distance = self.calculate_Hamming_Distance(vector, letter_vector)
+        for letter, letter_vector in correctLetters.letters.items():  #Here we compare to out correctLetters data, this can be changed.
+            i_distance = self.calculate_dot_product(vector, letter_vector)
 
-            if i_distance < closest_distance:
+            if i_distance > closest_distance: # Here we implement the WInner takes it all (MaxNet)
                 closest_distance = i_distance
                 closest_letter = letter
 
-        return closest_letter  # Return after checking all letters
+        return closest_letter
 
+    # Function to adjust our weights and change the binary vectors
     def train(self, input_vector, supposed_to_get_letter, learning_rate):
-        # Loop through the input vector and adjust weights
+
         for i in range(len(input_vector)):
+
             # Get the expected bit for the current letter
             correct_bit = correctLetters.letters[supposed_to_get_letter][i]
 
-            # Gradually move weight toward the correct bit using learning rate
+            # We use learning rate to change our binary
             self.hnn_dic[supposed_to_get_letter][i] += learning_rate * (
                     correct_bit - self.hnn_dic[supposed_to_get_letter][i])
 
+            # The way I chose to implement our training model, this can be changed
             if self.hnn_dic[supposed_to_get_letter][i] >= 0.5:
                 self.hnn_dic[supposed_to_get_letter][i] = 1
             else:
                 self.hnn_dic[supposed_to_get_letter][i] = 0
-
 
     def train_step(self, input_vector, supposed_to_get_letter, learning_rate):
 

@@ -20,6 +20,7 @@ class HammingNetGUI:
         self.create_submit_button()
         self.create_statistics_button()
         self.create_train_button()
+        self.create_train_button_10_times()
 
     def create_grid(self):
         self.canvas = tk.Canvas(self.root, width=self.grid_size * self.cell_size,
@@ -54,22 +55,39 @@ class HammingNetGUI:
         self.submit_button.pack(side="left", padx=5)
 
     def create_statistics_button(self):
-        self.statistics_button = tk.Button(self.root, text="Perform Statistics", command=lambda: statistics.perform_experiment(self.hamming_net))
+        self.statistics_button = tk.Button(self.root, text="Perform Statistics",
+                                           command=lambda: statistics.perform_experiment(self.hamming_net))
         self.statistics_button.pack(side="left", padx=5)
 
     def create_train_button(self):
         self.train_button = tk.Button(self.root, text="Train All Letters", command=self.train_all_letters)
         self.train_button.pack(side="left", padx=5)
 
+    def create_train_button_10_times(self):
+        self.train_button_10_times = tk.Button(self.root, text="Train All Letters 10 Times", command=self.train_all_letters_10_times)
+        self.train_button_10_times.pack(side="left", padx=5)
+
     def submit(self):
-        estimated_letter = Hamming_Net.HammingNeuralNetwork.calculate_closest_letter(self.hamming_net, self.binary_vector)
+        estimated_letter = Hamming_Net.HammingNeuralNetwork.calculate_closest_letter(self.hamming_net,
+                                                                                     self.binary_vector)
         print(f"Estimated Letter: {estimated_letter}")
         print(f"Letter's vector: {Hamming_Net.HammingNeuralNetwork.letter_to_vector(estimated_letter)}")
 
     def train_all_letters(self):
 
+        for letter, vector in self.hamming_net.hnn_dic.items():
+            Hamming_Net.HammingNeuralNetwork.train_step(self.hamming_net, vector, letter, learning_rate=0.7)
+
+        print("Training complete!")
+
+    def train_all_letters_10_times(self):
+
+        for i in range(10):
+
             for letter, vector in self.hamming_net.hnn_dic.items():
                 Hamming_Net.HammingNeuralNetwork.train_step(self.hamming_net, vector, letter, learning_rate=0.7)
+
+
             print("Training complete!")
 
 
